@@ -1,0 +1,66 @@
+# EU-Mehrwertsteuersätze.
+#
+# Diese Datei ist die einzige Wahrheit über Steuersätze. Im Code steht kein
+# einziger Satz. Ein Update ist ein reiner Datei-Commit — keine Klassenänderung,
+# keine Migration, kein Deploy von Logik.
+#
+# VERIFIKATION VOR DEM LIVEGANG
+# Die Werte stammen aus dem Kenntnisstand beim Anlegen der Datei und sind NICHT
+# maschinell gegen die Quelle abgeglichen. Vor dem ersten echten Zahlungslauf ist
+# jeder `standard`-Satz gegen die TAXUD-Liste zu prüfen und `meta.as_of` neu zu
+# setzen. RateTableFreshnessTest schlägt fehl, sobald `as_of` älter als 400 Tage
+# ist — das ist Absicht.
+#
+# `resolve()` verwendet ausschliesslich `standard`. Die ermässigten Sätze stehen
+# hier, damit die Naht existiert (RateCategory), sind aber noch von keiner Regel
+# angefasst und entsprechend unverifiziert. Wer sie in Betrieb nimmt, prüft sie
+# vorher einzeln — ermässigte Sätze hängen an Leistungskategorien, nicht am Land.
+#
+# Drittländer werden mit `eu: false` GEFÜHRT statt weggelassen: so schlägt ein
+# Tippfehler als "unbekanntes Land" fehl, statt still als Drittland durchzurutschen.
+meta:
+    as_of: '2026-01-01'
+    source: 'Europäische Kommission (TAXUD) — VAT rates applied in the Member States of the European Union'
+    reference: 'https://ec.europa.eu/taxation_customs/tedb/'
+    # Kein home_country hier: das Sitzland gehört dem Aufrufer, nicht der Tabelle.
+    # Es kommt als Konstruktor-Parameter in den VatResolver.
+
+countries:
+    # --- EU-Mitgliedstaaten (27) ---
+    AT: { name: 'Österreich',    eu: true, standard: 20.0, reduced: [13.0, 10.0], super_reduced: null, parking: 13.0 }
+    BE: { name: 'Belgien',       eu: true, standard: 21.0, reduced: [12.0, 6.0],  super_reduced: null, parking: 12.0 }
+    BG: { name: 'Bulgarien',     eu: true, standard: 20.0, reduced: [9.0],        super_reduced: null, parking: null }
+    CY: { name: 'Zypern',        eu: true, standard: 19.0, reduced: [9.0, 5.0],   super_reduced: null, parking: null }
+    CZ: { name: 'Tschechien',    eu: true, standard: 21.0, reduced: [12.0],       super_reduced: null, parking: null }
+    DE: { name: 'Deutschland',   eu: true, standard: 19.0, reduced: [7.0],        super_reduced: null, parking: null }
+    DK: { name: 'Dänemark',      eu: true, standard: 25.0, reduced: [],           super_reduced: null, parking: null }
+    EE: { name: 'Estland',       eu: true, standard: 24.0, reduced: [9.0],        super_reduced: null, parking: null }
+    ES: { name: 'Spanien',       eu: true, standard: 21.0, reduced: [10.0],       super_reduced: 4.0,  parking: null }
+    FI: { name: 'Finnland',      eu: true, standard: 25.5, reduced: [14.0, 10.0], super_reduced: null, parking: null }
+    FR: { name: 'Frankreich',    eu: true, standard: 20.0, reduced: [10.0, 5.5],  super_reduced: 2.1,  parking: null }
+    GR: { name: 'Griechenland',  eu: true, standard: 24.0, reduced: [13.0, 6.0],  super_reduced: null, parking: null }
+    HR: { name: 'Kroatien',      eu: true, standard: 25.0, reduced: [13.0, 5.0],  super_reduced: null, parking: null }
+    HU: { name: 'Ungarn',        eu: true, standard: 27.0, reduced: [18.0, 5.0],  super_reduced: null, parking: null }
+    IE: { name: 'Irland',        eu: true, standard: 23.0, reduced: [13.5, 9.0],  super_reduced: 4.8,  parking: 13.5 }
+    IT: { name: 'Italien',       eu: true, standard: 22.0, reduced: [10.0, 5.0],  super_reduced: 4.0,  parking: null }
+    LT: { name: 'Litauen',       eu: true, standard: 21.0, reduced: [9.0, 5.0],   super_reduced: null, parking: null }
+    LU: { name: 'Luxemburg',     eu: true, standard: 17.0, reduced: [14.0, 8.0],  super_reduced: 3.0,  parking: 14.0 }
+    LV: { name: 'Lettland',      eu: true, standard: 21.0, reduced: [12.0, 5.0],  super_reduced: null, parking: null }
+    MT: { name: 'Malta',         eu: true, standard: 18.0, reduced: [12.0, 7.0, 5.0], super_reduced: null, parking: null }
+    NL: { name: 'Niederlande',   eu: true, standard: 21.0, reduced: [9.0],        super_reduced: null, parking: null }
+    PL: { name: 'Polen',         eu: true, standard: 23.0, reduced: [8.0, 5.0],   super_reduced: null, parking: null }
+    PT: { name: 'Portugal',      eu: true, standard: 23.0, reduced: [13.0, 6.0],  super_reduced: null, parking: 13.0 }
+    RO: { name: 'Rumänien',      eu: true, standard: 21.0, reduced: [11.0],       super_reduced: null, parking: null }
+    SE: { name: 'Schweden',      eu: true, standard: 25.0, reduced: [12.0, 6.0],  super_reduced: null, parking: null }
+    SI: { name: 'Slowenien',     eu: true, standard: 22.0, reduced: [9.5, 5.0],   super_reduced: null, parking: null }
+    SK: { name: 'Slowakei',      eu: true, standard: 23.0, reduced: [19.0, 5.0],  super_reduced: null, parking: null }
+
+    # --- Drittländer ---
+    # Nur die, mit denen wir tatsächlich rechnen. Der Satz ist rein informativ:
+    # `resolve()` liefert für jedes `eu: false` immer 0,0 % ohne EU-USt.
+    CH: { name: 'Schweiz',            eu: false, standard: 8.1,  reduced: [3.8, 2.6], super_reduced: null, parking: null }
+    GB: { name: 'Vereinigtes Königreich', eu: false, standard: 20.0, reduced: [5.0],  super_reduced: null, parking: null }
+    NO: { name: 'Norwegen',           eu: false, standard: 25.0, reduced: [15.0, 12.0], super_reduced: null, parking: null }
+    US: { name: 'Vereinigte Staaten', eu: false, standard: 0.0,  reduced: [],         super_reduced: null, parking: null }
+    CA: { name: 'Kanada',             eu: false, standard: 5.0,  reduced: [],         super_reduced: null, parking: null }
+    AU: { name: 'Australien',         eu: false, standard: 10.0, reduced: [],         super_reduced: null, parking: null }

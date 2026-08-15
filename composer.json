@@ -1,0 +1,39 @@
+{
+    "name": "daumedia/vat-resolver",
+    "description": "EU-Mehrwertsteuersätze und Leistungsortregeln für digitale Leistungen",
+    "type": "library",
+    "license": "proprietary",
+    "require": {
+        "php": ">=8.4",
+        "psr/simple-cache": "^3.0",
+        "symfony/yaml": "^7.0|^8.0"
+    },
+    "require-dev": {
+        "nyholm/psr7": "^1.8",
+        "phpunit/phpunit": ">=11.0",
+        "psr/http-client": "^1.0",
+        "psr/http-factory": "^1.0",
+        "psr/http-message": "^2.0"
+    },
+    "suggest": {
+        "psr/http-client-implementation": "Nur für Psr18ViesLookup — der blockierende VIES-Abruf im Worker"
+    },
+    "autoload": {
+        "psr-4": {
+            "Daumedia\\VatResolver\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Daumedia\\VatResolver\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
