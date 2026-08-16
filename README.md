@@ -17,16 +17,35 @@ hier — mit den Sätzen in einer YAML-Datei statt im Code.
 ```json
 {
     "repositories": [
-        { "type": "path", "url": "../vat-resolver", "options": { "symlink": true } }
+        { "type": "vcs", "url": "https://github.com/daumedia/daumedia-vat-resolver.git" }
     ],
     "require": { "daumedia/vat-resolver": "@dev" }
 }
 ```
 
-> Solange dies ein Pfad-Repository ist, müssen beide Verzeichnisse nebeneinander
-> liegen. `composer.lock` speichert einen absoluten Pfad und ist deshalb nicht
-> maschinenportabel. Sobald CI oder ein automatisiertes Deployment dazukommt, ist
-> der Umstieg auf `{"type": "vcs"}` fällig — der Constraint `@dev` bleibt gültig.
+Das Repository ist privat — `composer install` braucht also einen GitHub-Zugang
+(Token oder SSH-Schlüssel). Der Constraint `@dev` zieht `dev-main`; es gibt noch
+keine Tags.
+
+### Lokal daran entwickeln
+
+Über das VCS-Repository wirkt eine Änderung erst nach `git push` plus
+`composer update`. Wer aktiv am Package arbeitet, überschreibt das im
+konsumierenden Projekt vorübergehend mit einem Pfad-Repository:
+
+```bash
+composer config repositories.vat-resolver '{"type":"path","url":"../vat-resolver","options":{"symlink":true}}'
+composer update daumedia/vat-resolver
+```
+
+Dann liegt in `vendor/` ein Symlink und jede Änderung wirkt sofort. **Vor dem
+Commit zurückstellen** — sonst landet ein Pfad in `composer.lock`, den auf einem
+anderen Rechner niemand auflösen kann:
+
+```bash
+composer config repositories.vat-resolver '{"type":"vcs","url":"https://github.com/daumedia/daumedia-vat-resolver.git"}'
+composer update daumedia/vat-resolver
+```
 
 ## Benutzung
 
